@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "priority": 1100,
+  "package": "com.omga.omgen.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "omgen.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "LiquidBlockMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

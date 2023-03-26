@@ -1,0 +1,13 @@
+{
+  "primary": "#minecraft:lava",
+  "secondary": "#minecraft:water",
+  "secondary_pos": "Replace",
+  "around": [
+    "#minecraft:logs_that_burn",
+    "#minecraft:logs_that_burn"
+  ],
+  "gens": [
+    [20, "minecraft:acacia_log"],
+    [20, "#minecraft:wool"]
+  ]
+}

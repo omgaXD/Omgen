@@ -1,0 +1,10 @@
+{
+  "below": "minecraft:bedrock",
+  "primary": "#minecraft:lava",
+  "secondary": "#minecraft:water",
+  "secondary_pos": "Neighbour",
+  "gens": [
+    [100, "minecraft:cobblestone"],
+    [50, "#minecraft:base_stone_overworld"]
+  ]
+}
