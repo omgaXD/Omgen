@@ -17,7 +17,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 
 import javax.annotation.Nonnull;
@@ -244,7 +243,7 @@ public class GenerationCondition {
             );
         }
 
-        public static <T extends IForgeRegistryEntry<T>> ItemOrTagKey fromString(String string, IForgeRegistry<T> reg) {
+        public static <T> ItemOrTagKey fromString(String string, IForgeRegistry<T> reg) {
             if (string == null) return null;
             if (string.isBlank()) {
                 throw new IllegalArgumentException("Blank string");

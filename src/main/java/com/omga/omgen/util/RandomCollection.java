@@ -88,7 +88,7 @@ public class RandomCollection<E> {
             src.map.forEach((d, bs) -> {
                 var temp = new JsonArray();
                 temp.add(d);
-                temp.add(bs.getBlock().getRegistryName().toString());
+                temp.add(Registry.BLOCK.getKey(bs.getBlock()).toString());
                 gens.add(temp);
             });
             return gens;

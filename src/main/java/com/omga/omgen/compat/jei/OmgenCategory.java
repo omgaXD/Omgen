@@ -18,12 +18,12 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
@@ -46,8 +46,12 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
         ResourceLocation location = new ResourceLocation("jei", "textures/gui/gui_vanilla.png");;
         this.background = guiHelper.createDrawable(location, 0, 60, width, height);
         this.icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.COBBLESTONE));
-        this.localizedName = new TranslatableComponent("gui.omgen.category.omgen");
+        this.localizedName = Component.translatable("gui.omgen.category.omgen");
 
+    }
+
+    public ResourceLocation getUid() {
+        return new ResourceLocation(Omgen.MODID, Omgen.MODID);
     }
 
     @Override
@@ -63,16 +67,6 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
     @Override
     public IDrawable getIcon() {
         return icon;
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return new ResourceLocation(Omgen.MODID, Omgen.MODID);
-    }
-
-    @Override
-    public Class<? extends GenerationEntry> getRecipeClass() {
-        return this.getRecipeType().getRecipeClass();
     }
     @Override
     public RecipeType<GenerationEntry> getRecipeType() {
@@ -167,7 +161,7 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
         belowSlot.addTooltipCallback(new IRecipeSlotTooltipCallback() {
             @Override
             public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
-                tooltip.add(new TranslatableComponent("gui.omgen.text.below"));
+                tooltip.add(Component.translatable("gui.omgen.text.below"));
             }
         });
         IRecipeSlotBuilder aboveSlot;
@@ -188,7 +182,7 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
         aboveSlot.addTooltipCallback(new IRecipeSlotTooltipCallback() {
             @Override
             public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
-                tooltip.add(new TranslatableComponent("gui.omgen.text.above"));
+                tooltip.add(Component.translatable("gui.omgen.text.above"));
             }
         });
         Map<Item, Integer> blocksCount = new HashMap<>();
@@ -218,7 +212,7 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
             @Override
             public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
                 if (recipeSlotView.getDisplayedIngredient().get().getItemStack().isPresent())
-                    tooltip.add(new TranslatableComponent("gui.omgen.text.side").append(": " + blocksCount.getOrDefault(recipeSlotView
+                    tooltip.add(Component.translatable("gui.omgen.text.side").append(": " + blocksCount.getOrDefault(recipeSlotView
                         .getDisplayedIngredient()
                         .get().getItemStack().get().getItem(), 0)));
             }
@@ -259,7 +253,7 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
         return result;
     }
     public static Component newHoverName(ItemStack stack, double d, double total) {
-        return stack.getHoverName().copy().append(" | ").append(new TranslatableComponent("gui.omgen.text.weight").append(": " + beautifyDouble(d * 100 / total)).append("%"));
+        return stack.getHoverName().copy().append(" | ").append(Component.translatable("gui.omgen.text.weight").append(": " + beautifyDouble(d * 100 / total)).append("%"));
     }
     @Override
     public void draw(GenerationEntry recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {

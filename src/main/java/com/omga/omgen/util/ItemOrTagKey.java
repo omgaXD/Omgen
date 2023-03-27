@@ -1,14 +1,14 @@
 package com.omga.omgen.util;
 
 import net.minecraft.tags.TagKey;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nullable;
 
 /** Holds either an item (Block, Fluid) or its tagkey.
  * @param <T> Anything that can have a TagKey
  */
-public class ItemOrTagKey<T extends IForgeRegistryEntry<T>> {
+public class ItemOrTagKey<T> {
     @Nullable
     public T item;
     @Nullable
@@ -28,17 +28,16 @@ public class ItemOrTagKey<T extends IForgeRegistryEntry<T>> {
     public boolean holdsTagKey() {
         return tagKey != null;
     }
-    public static <T extends IForgeRegistryEntry<T>> ItemOrTagKey byItem(T item) {
+    public static <T> ItemOrTagKey byItem(T item) {
         return new ItemOrTagKey<T>(item);
     }
-    public static <T extends IForgeRegistryEntry<T>> ItemOrTagKey byTagKey(TagKey<T> item) {
+    public static <T> ItemOrTagKey byTagKey(TagKey<T> item) {
         return new ItemOrTagKey<T>(item);
     }
 
-    @Override
-    public String toString() {
+    public String toString(IForgeRegistry<T> reg) {
         if (this.holdsItem()) {
-            return this.item.getRegistryName().toString();
+            return reg.getKey(this.item).toString();
         } else if (this.holdsTagKey()) {
             return "#" + this.tagKey.location().toString();
         }
