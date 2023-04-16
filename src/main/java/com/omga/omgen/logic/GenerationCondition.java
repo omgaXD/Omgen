@@ -1,6 +1,7 @@
 package com.omga.omgen.logic;
 
 import com.google.gson.*;
+import com.omga.omgen.logic.GenerationCondition.Context.PositionOfTheOtherFluid;
 import com.omga.omgen.util.ItemOrTagKey;
 import com.omga.omgen.util.RandomCollection;
 import com.omga.omgen.util.StaticHelper;
@@ -64,21 +65,21 @@ public class GenerationCondition {
         if (context.theOtherFluid != null) {
             if (context.pos == null) throw new NullPointerException("Skill issue occurred #2");
 
-            if (context.pos == Context.PositionOfTheOtherFluid.Replace) {
+            if (context.pos == PositionOfTheOtherFluid.Replace) {
                 // if I want the generation to happen when liquid #1 drops onto liquid #2 from above.
                 if (context.theOtherFluid.holdsItem()) {
                     condition = condition.and((l, bp) -> l.getFluidState(bp).is(context.theOtherFluid.item));
                 } else if (context.theOtherFluid.holdsTagKey()) {
                     condition = condition.and((l, bp) -> l.getFluidState(bp).is(context.theOtherFluid.tagKey));
                 }
-            } else if (context.pos == Context.PositionOfTheOtherFluid.Neighbour) {
+            } else if (context.pos == PositionOfTheOtherFluid.Neighbour) {
                 // if I want the generation to happen when the other liquid is right next to the new block of my current.
                 if (context.theOtherFluid.holdsItem()) {
                     condition = condition.and((l, bp) -> Generation.getFluidStatesAroundButNotAbove(l, bp).stream().anyMatch(fs -> fs.is(context.theOtherFluid.item)));
                 } else if (context.theOtherFluid.holdsTagKey()) {
                     condition = condition.and((l, bp) -> Generation.getFluidStatesAroundButNotAbove(l, bp).stream().anyMatch(fs -> fs.is(context.theOtherFluid.tagKey)));
                 }
-            } else if (context.pos == Context.PositionOfTheOtherFluid.Doesntmatter) {
+            } else if (context.pos == PositionOfTheOtherFluid.Doesntmatter) {
                 if (context.theOtherFluid.holdsItem()) {
                     condition = condition.and((l, bp) -> Generation.getFluidStatesAroundButNotAbove(l, bp).stream().anyMatch(fs -> fs.is(context.theOtherFluid.item)) || l.getFluidState(bp).is(context.theOtherFluid.item));
                 } else if (context.theOtherFluid.holdsTagKey()) {
@@ -197,7 +198,7 @@ public class GenerationCondition {
             ItemOrTagKey<Block>[] neighbourBlocksAround = null;
             ItemOrTagKey<Fluid> initiatingFluid = null;
             ItemOrTagKey<Fluid> theOtherFluid = null;
-            GenerationCondition.Context.PositionOfTheOtherFluid pos = null;
+            PositionOfTheOtherFluid pos = null;
 
             // now deserialize it all.
             if (jsonobject.has("below"))
@@ -217,13 +218,15 @@ public class GenerationCondition {
             if (jsonobject.has("primary"))
                 initiatingFluid = fromString(GsonHelper.getAsString(jsonobject, "primary"),
                         ForgeRegistries.FLUIDS);
+
+            else throw new JsonParseException("Skill issue #4 occurred: no liquid specified");
             if (jsonobject.has("secondary"))
                 theOtherFluid = fromString(GsonHelper.getAsString(jsonobject, "secondary"),
                         ForgeRegistries.FLUIDS);
+
             if (jsonobject.has("secondary_pos"))
-                pos = Enum.valueOf(
-                        GenerationCondition.Context.PositionOfTheOtherFluid.class,
-                        GsonHelper.getAsString(jsonobject, "secondary_pos"));
+                pos = handleJsonEnum( GsonHelper.getAsString(jsonobject, "secondary_pos"));
+            else pos = PositionOfTheOtherFluid.Doesntmatter;
 
 
             GenerationCondition.Context resultContext = new GenerationCondition.Context(
@@ -243,7 +246,29 @@ public class GenerationCondition {
                     blockRandomCollection
             );
         }
+        private static PositionOfTheOtherFluid handleJsonEnum(String valueString) {
+            try {
+                return Enum.valueOf(
+                        PositionOfTheOtherFluid.class,
+                        valueString);
+            } catch (IllegalArgumentException e) {
+                var enumValues = PositionOfTheOtherFluid.values();
+                int i = 1;
+                for (PositionOfTheOtherFluid enumValue : enumValues) {
+                    // if either first letter of name or the number matches
+                    if (enumValue.name().substring(0, 1).equalsIgnoreCase(valueString)) {
+                        return enumValue;
+                    }
+                    if (String.valueOf(i).equals(valueString)) {
+                        return enumValue;
+                    }
+                    i++;
+                }
+                // if nothing succeed, something's wrong
+                throw e;
+            }
 
+        }
         public static <T extends IForgeRegistryEntry<T>> ItemOrTagKey fromString(String string, IForgeRegistry<T> reg) {
             if (string == null) return null;
             if (string.isBlank()) {
