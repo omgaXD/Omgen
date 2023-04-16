@@ -1,19 +1,12 @@
 package com.omga.omgen.logic;
 
 import com.omga.omgen.resources.OmgenReloadListener;
-import com.omga.omgen.util.ItemOrTagKey;
-import com.omga.omgen.util.RandomCollection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
@@ -62,20 +55,35 @@ public class Generation {
 
 
     public static BlockState generateAt(LevelAccessor level, BlockPos origin) {
-        // if it's Neigh or Don't care
+        List<GenerationEntry> GEs = new ArrayList<>();
+
+        int biggestPriority = -1;
+
         for (var ge : OmgenReloadListener.entries.values()) {
+            // if it's Neigh or Don't care
             if (ge.condition.getContext().pos != GenerationCondition.Context.PositionOfTheOtherFluid.Replace) {
-                if (ge.condition.getInitiatingFluid().test(level.getFluidState(origin)) && ge.condition.getCondition().test(level, origin)) {
-                    return ge.pool.next();
-                }
+                biggestPriority = checkAndLookForBiggerPriority(ge, level, origin, origin, biggestPriority, GEs);
             }
             // If it's Replace or Don't care
             if (ge.condition.getContext().pos != GenerationCondition.Context.PositionOfTheOtherFluid.Neighbour) {
-                if (ge.condition.getInitiatingFluid().test(level.getFluidState(origin.above())) && ge.condition.getCondition().test(level, origin)) {
-                    return ge.pool.next();
-                }
+                biggestPriority = checkAndLookForBiggerPriority(ge, level, origin.above(), origin, biggestPriority, GEs);
             }
         }
+        if (GEs.size() > 0) {
+            int index = level.getRandom().nextInt(GEs.size());
+            return GEs.get(index).pool.next();
+        }
         return null;
+    }
+
+    private static int checkAndLookForBiggerPriority(GenerationEntry ge, LevelAccessor level, BlockPos origin, BlockPos origin1, int biggestPriority, List<GenerationEntry> GEs) {
+        if (ge.condition.getInitiatingFluid().test(level.getFluidState(origin)) && ge.condition.getCondition().test(level, origin1)) {
+            if (ge.getPriority() > biggestPriority) {
+                GEs.clear();
+                biggestPriority = ge.getPriority();
+            }
+            GEs.add(ge);
+        }
+        return biggestPriority;
     }
 }
