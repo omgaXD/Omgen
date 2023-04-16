@@ -3,14 +3,11 @@ package com.omga.omgen.logic;
 import com.google.gson.*;
 import com.omga.omgen.logic.GenerationCondition.Context.PositionOfTheOtherFluid;
 import com.omga.omgen.util.ItemOrTagKey;
-import com.omga.omgen.util.RandomCollection;
+import com.omga.omgen.util.WeightedRandomCollection;
 import com.omga.omgen.util.StaticHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.entity.animal.Panda;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,16 +16,13 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
-import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.json.JsonArrayBuilder;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -199,7 +193,7 @@ public class GenerationCondition {
             ItemOrTagKey<Fluid> initiatingFluid = null;
             ItemOrTagKey<Fluid> theOtherFluid = null;
             PositionOfTheOtherFluid pos = null;
-
+            int priority = 100;
             // now deserialize it all.
             if (jsonobject.has("below"))
                 blockBelow = fromString(GsonHelper.getAsString(jsonobject, "below"),
@@ -228,6 +222,9 @@ public class GenerationCondition {
                 pos = handleJsonEnum( GsonHelper.getAsString(jsonobject, "secondary_pos"));
             else pos = PositionOfTheOtherFluid.Doesntmatter;
 
+            if (jsonobject.has("priority")) {
+                priority = GsonHelper.getAsInt(jsonobject, "priority");
+            }
 
             GenerationCondition.Context resultContext = new GenerationCondition.Context(
                     blockBelow,
@@ -239,11 +236,12 @@ public class GenerationCondition {
             );
 
             // next up, serialize the weighted drops
-            RandomCollection<BlockState> blockRandomCollection = new RandomCollection.Serializer().deserialize(jsonobject.getAsJsonArray("gens"), typeOfT, c);
+            WeightedRandomCollection<BlockState> blockRandomCollection = new WeightedRandomCollection.Serializer().deserialize(jsonobject.getAsJsonArray("gens"), typeOfT, c);
 
             return new GenerationEntry(
                     new GenerationCondition(resultContext),
-                    blockRandomCollection
+                    blockRandomCollection,
+                    priority
             );
         }
         private static PositionOfTheOtherFluid handleJsonEnum(String valueString) {
@@ -302,7 +300,7 @@ public class GenerationCondition {
             object.addProperty("secondary_pos", context.pos.name());
 
             // now random collection
-            object.add("gens", new RandomCollection.Serializer().serialize(src.pool, typeOfSrc, c));
+            object.add("gens", new WeightedRandomCollection.Serializer().serialize(src.pool, typeOfSrc, c));
             return object;
         }
     }

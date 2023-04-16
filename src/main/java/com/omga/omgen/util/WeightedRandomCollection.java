@@ -4,18 +4,15 @@ import com.google.gson.*;
 import com.mojang.logging.LogUtils;
 import com.omga.omgen.logic.GenerationCondition;
 import net.minecraft.core.Registry;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.slf4j.Logger;
 
-import javax.json.JsonArrayBuilder;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.BiConsumer;
 
-public class RandomCollection<E> {
+public class WeightedRandomCollection<E> {
     private final NavigableMap<Double, E> map = new TreeMap<Double, E>();
     private final Random random;
 
@@ -25,18 +22,18 @@ public class RandomCollection<E> {
 
     private double total = 0;
 
-    public RandomCollection() {
+    public WeightedRandomCollection() {
         this(new Random());
     }
 
-    public RandomCollection(Random random) {
+    public WeightedRandomCollection(Random random) {
         this.random = random;
     }
 
     public void forEach(BiConsumer<Double, E> consumer) {
         map.forEach(consumer);
     }
-    public RandomCollection<E> add(double weight, E result) {
+    public WeightedRandomCollection<E> add(double weight, E result) {
         if (weight <= 0) return this;
         total += weight;
         map.put(total, result);
@@ -48,12 +45,12 @@ public class RandomCollection<E> {
         return map.higherEntry(value).getValue();
     }
 
-    public static class Serializer implements JsonDeserializer<RandomCollection<BlockState>>, JsonSerializer<RandomCollection<BlockState>> {
+    public static class Serializer implements JsonDeserializer<WeightedRandomCollection<BlockState>>, JsonSerializer<WeightedRandomCollection<BlockState>> {
 
         @Override
-        public RandomCollection<BlockState> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public WeightedRandomCollection<BlockState> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             var arr = json.getAsJsonArray();
-            RandomCollection<BlockState> blockRandomCollection = new RandomCollection<>();
+            WeightedRandomCollection<BlockState> blockRandomCollection = new WeightedRandomCollection<>();
             arr.forEach(element -> {
                 double weight = element.getAsJsonArray().get(0).getAsDouble();
                 String string = element.getAsJsonArray().get(1).getAsString();
@@ -83,7 +80,7 @@ public class RandomCollection<E> {
         }
 
         @Override
-        public JsonElement serialize(RandomCollection<BlockState> src, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(WeightedRandomCollection<BlockState> src, Type typeOfSrc, JsonSerializationContext context) {
             JsonArray gens = new JsonArray();
             src.map.forEach((d, bs) -> {
                 var temp = new JsonArray();

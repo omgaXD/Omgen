@@ -1,20 +1,22 @@
 package com.omga.omgen.logic;
 
-import com.google.gson.*;
-import com.omga.omgen.util.RandomCollection;
-import net.minecraft.util.Tuple;
+import com.omga.omgen.util.WeightedRandomCollection;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 
 public class GenerationEntry {
     public GenerationCondition condition;
     // blockstate-weight
-    public RandomCollection<BlockState> pool;
+    public WeightedRandomCollection<BlockState> pool;
 
-    public GenerationEntry(GenerationCondition condition, RandomCollection<BlockState> pool) {
+    private int priority;
+
+    public GenerationEntry(GenerationCondition condition, WeightedRandomCollection<BlockState> pool, int priority) {
         this.condition = condition;
         this.pool = pool;
+        this.priority = priority;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 }
