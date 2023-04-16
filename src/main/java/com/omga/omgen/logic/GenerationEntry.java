@@ -13,6 +13,7 @@ public class GenerationEntry {
     // blockstate-weight
     public RandomCollection<BlockState> pool;
 
+
     public GenerationEntry(GenerationCondition condition, RandomCollection<BlockState> pool) {
         this.condition = condition;
         this.pool = pool;
