@@ -1,9 +1,0 @@
-{
-  "above": "minecraft:diamond_block",
-  "below": "minecraft:diamond_block",
-  "primary": "#minecraft:water",
-  "gens": [
-    [20, "minecraft:diamond_block"],
-    [20, "minecraft:emerald_block"]
-  ]
-}
