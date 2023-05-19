@@ -5,6 +5,7 @@ import com.omga.omgen.logic.GenerationCondition.Context.PositionOfTheOtherFluid;
 import com.omga.omgen.util.ItemOrTagKey;
 import com.omga.omgen.util.WeightedRandomCollection;
 import com.omga.omgen.util.StaticHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -54,6 +55,10 @@ public class GenerationCondition {
         // starting a massive predicate that'll do the big check for logic.
         condition = (l, bp) -> true;
 
+        // it would make sense to check height here first.
+        condition = condition.and((l, bp) -> bp.getY() >= context.minHeight);
+        condition = condition.and((l, bp) -> bp.getY() <= context.maxHeight);
+
         // add the other fluid to the predicate.
         if (context.theOtherFluid != null) {
             if (context.pos == null) throw new NullPointerException("Skill issue occurred #2");
@@ -80,6 +85,7 @@ public class GenerationCondition {
                 }
             }
         }
+
 
         // add block above.
         if (context.blockAbove != null) {
@@ -150,13 +156,24 @@ public class GenerationCondition {
         @Nullable
         public PositionOfTheOtherFluid pos;
 
-        public Context(@Nullable ItemOrTagKey<Block> blockBelow, @Nullable ItemOrTagKey<Block> blockAbove, @Nullable ItemOrTagKey<Block>[] neighbourBlocksAround, @Nonnull ItemOrTagKey<Fluid> initiatingFluid, @Nullable ItemOrTagKey<Fluid> theOtherFluid, @Nullable PositionOfTheOtherFluid pos) {
+        // Min and max height of the generation that can occur (both inclusive)
+        int minHeight = Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getMinBuildHeight() : 0;
+        int maxHeight = Minecraft.getInstance().level.getMaxBuildHeight();
+
+        public Context(@Nullable ItemOrTagKey<Block> blockBelow, @Nullable ItemOrTagKey<Block> blockAbove, @Nullable ItemOrTagKey<Block>[] neighbourBlocksAround, @Nonnull ItemOrTagKey<Fluid> initiatingFluid, @Nullable ItemOrTagKey<Fluid> theOtherFluid, @Nullable PositionOfTheOtherFluid pos, Integer minHeight, Integer maxHeight) {
             this.blockBelow = blockBelow;
             this.blockAbove = blockAbove;
             this.neighbourBlocksAround = neighbourBlocksAround;
             this.initiatingFluid = initiatingFluid;
             this.theOtherFluid = theOtherFluid;
             this.pos = pos;
+            if (minHeight != null) {
+                this.minHeight = minHeight;
+            }
+            if (maxHeight != null) {
+                this.maxHeight = maxHeight;
+            }
+
         }
 
         public enum PositionOfTheOtherFluid {
@@ -192,17 +209,16 @@ public class GenerationCondition {
             ItemOrTagKey<Fluid> initiatingFluid = null;
             ItemOrTagKey<Fluid> theOtherFluid = null;
             PositionOfTheOtherFluid pos = null;
+            Integer minHeight = null;
+            Integer maxHeight = null;
             int priority = 100;
-
             // now deserialize it all.
             if (jsonobject.has("below"))
                 blockBelow = fromString(GsonHelper.getAsString(jsonobject, "below"),
                         ForgeRegistries.BLOCKS);
-
             if (jsonobject.has("above"))
                 blockAbove = fromString(GsonHelper.getAsString(jsonobject, "above"),
                         ForgeRegistries.BLOCKS);
-
             if (jsonobject.has("around")) {
                 List<ItemOrTagKey<Block>> list = new ArrayList<>();
                 GsonHelper.getAsJsonArray(jsonobject, "around").forEach(element -> {
@@ -211,12 +227,11 @@ public class GenerationCondition {
                 neighbourBlocksAround = list.toArray(new ItemOrTagKey[0]);
 
             }
-
             if (jsonobject.has("primary"))
                 initiatingFluid = fromString(GsonHelper.getAsString(jsonobject, "primary"),
                         ForgeRegistries.FLUIDS);
-            else throw new JsonParseException("Skill issue #3 occurred: no primary fluid found.");
 
+            else throw new JsonParseException("Skill issue #4 occurred: no liquid specified");
             if (jsonobject.has("secondary"))
                 theOtherFluid = fromString(GsonHelper.getAsString(jsonobject, "secondary"),
                         ForgeRegistries.FLUIDS);
@@ -229,6 +244,14 @@ public class GenerationCondition {
                 priority = GsonHelper.getAsInt(jsonobject, "priority");
             }
 
+            if (jsonobject.has("min_height")) {
+                minHeight = GsonHelper.getAsInt(jsonobject, "min_height");
+            }
+
+            if (jsonobject.has("max_height")) {
+                maxHeight = GsonHelper.getAsInt(jsonobject, "max_height");
+            }
+
 
             GenerationCondition.Context resultContext = new GenerationCondition.Context(
                     blockBelow,
@@ -236,7 +259,9 @@ public class GenerationCondition {
                     neighbourBlocksAround,
                     initiatingFluid,
                     theOtherFluid,
-                    pos
+                    pos,
+                    minHeight,
+                    maxHeight
             );
 
             // next up, serialize the weighted drops
@@ -302,6 +327,9 @@ public class GenerationCondition {
             object.addProperty("primary", context.initiatingFluid.toString());
             object.addProperty("secondary", context.theOtherFluid.toString());
             object.addProperty("secondary_pos", context.pos.name());
+
+            object.addProperty("min_height", context.minHeight);
+            object.addProperty("max_height", context.maxHeight);
 
             // now random collection
             object.add("gens", new WeightedRandomCollection.Serializer().serialize(src.pool, typeOfSrc, c));
