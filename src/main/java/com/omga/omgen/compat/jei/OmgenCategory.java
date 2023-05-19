@@ -16,14 +16,17 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
+import org.apache.commons.codec.language.bm.Lang;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
@@ -257,6 +260,8 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
     }
     @Override
     public void draw(GenerationEntry recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
-
+        Minecraft.getInstance().font.draw(stack, new TranslatableComponent("gui.omgen.text.min_height").append(String.valueOf(recipe.condition.getContext().minHeight)), 9, 55, DyeColor.WHITE.getTextColor());
+        Minecraft.getInstance().font.draw(stack, new TranslatableComponent("gui.omgen.text.max_height").append(String.valueOf(recipe.condition.getContext().maxHeight)), 9, 58, DyeColor.WHITE.getTextColor());
     }
+
 }
