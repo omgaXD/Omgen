@@ -158,8 +158,8 @@ public class GenerationCondition {
         public PositionOfTheOtherFluid pos;
 
         // Min and max height of the generation that can occur (both inclusive)
-        int minHeight = Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getMinBuildHeight() : 0;
-        int maxHeight = Minecraft.getInstance().level.getMaxBuildHeight();
+        public int minHeight = Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getMinBuildHeight() : 0;
+        public int maxHeight = Minecraft.getInstance().level.getMaxBuildHeight();
 
         public Context(@Nullable ItemOrTagKey<Block> blockBelow, @Nullable ItemOrTagKey<Block> blockAbove, @Nullable ItemOrTagKey<Block>[] neighbourBlocksAround, @Nonnull ItemOrTagKey<Fluid> initiatingFluid, @Nullable ItemOrTagKey<Fluid> theOtherFluid, @Nullable PositionOfTheOtherFluid pos, Integer minHeight, Integer maxHeight) {
             this.blockBelow = blockBelow;
