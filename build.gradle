@@ -141,9 +141,6 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 mixin {
     add sourceSets.main, 'omgen.refmap.json'
     config 'omgen.mixins.json'
-
-    debug.verbose = true
-    debug.export = true
 }
 repositories {
     maven {
