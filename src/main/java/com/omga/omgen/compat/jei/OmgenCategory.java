@@ -23,22 +23,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 import org.apache.commons.codec.language.bm.Lang;
 import org.slf4j.Logger;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("removal")
 public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
     public static final int width = 116;
-    public static final int height = 54;
+    public static final int height = 91;
     private final IDrawable background;
     private final IDrawable icon;
 
@@ -46,8 +43,8 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
 
     private static final Logger LOGGER = LogUtils.getLogger();
     public OmgenCategory(IGuiHelper guiHelper) {
-        ResourceLocation location = new ResourceLocation("jei", "textures/gui/gui_vanilla.png");;
-        this.background = guiHelper.createDrawable(location, 0, 60, width, height);
+        ResourceLocation location = new ResourceLocation(Omgen.MODID, "textures/gui/omgen.png");
+        this.background = guiHelper.createDrawable(location, 0, 0, width, height);
         this.icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.COBBLESTONE));
         this.localizedName = Component.translatable("gui.omgen.category.omgen");
 
@@ -76,6 +73,11 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
         return new RecipeType<>(getUid(), GenerationEntry.class);
     }
 
+    /**
+     * Returns a screen coordinate value for the slot coordinate.
+     * @param x The SLOT coordinate
+     * @return The SCREEN coordinate
+     */
     private static int f(int x) {
         return x * 18 + 1;
     }
@@ -117,7 +119,8 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
         int     fluid1X = 0, fluid1Y = 1,
                 fluid2X = fluid1X + 2, fluid2Y = fluid1Y,
                 interactionX = fluid1X + 1, interactionY = fluid1Y,
-                resultX = 95, resultY = 1;
+                resultX = 95, resultY = 1,
+                sideY = 55;
         ;
         boolean primaryAbove = false;
         if (recipe.condition.getContext().pos == null) {
@@ -188,38 +191,36 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
                 tooltip.add(Component.translatable("gui.omgen.text.above"));
             }
         });
-        Map<Item, Integer> blocksCount = new HashMap<>();
         IRecipeSlotBuilder interactionSlot = builder.addSlot(RecipeIngredientRole.CATALYST, f(interactionX), f(interactionY));
         if (context.neighbourBlocksAround != null) {
+            // add a new slot for side blocks per each next unique value
+            ArrayList<IRecipeSlotBuilder> sideSlots = new ArrayList<>();
+            AtomicInteger x = new AtomicInteger();
             Arrays.stream(context.neighbourBlocksAround).iterator().forEachRemaining(b -> {
                 if (b.holdsItem()) {
-                    interactionSlot.addItemStack(new ItemStack(b.item.asItem()));
-                    if (blocksCount.getOrDefault(b.item.asItem(), 0) == 0) {
-                        blocksCount.put(b.item.asItem(), 1);
-                    } else {
-                        blocksCount.put(b.item.asItem(), blocksCount.get(b.item.asItem()) + 1);
-                    }
+                    sideSlots.add(builder.addSlot(RecipeIngredientRole.CATALYST, 44 + f(x.get()), sideY).addItemStack(new ItemStack(b.item.asItem())));
+                    x.getAndIncrement();
                 } else if (b.holdsTagKey()) {
+                    var slot = builder.addSlot(RecipeIngredientRole.CATALYST, 44 + f(x.get()), sideY);
                     Registry.BLOCK.getTag(b.tagKey).get().forEach(b2 -> {
-                        interactionSlot.addItemStack(new ItemStack(b2.value().asItem()));
-                        if (blocksCount.getOrDefault(b2.value().asItem(), 0) == 0) {
-                            blocksCount.put(b2.value().asItem(), 1);
-                        } else {
-                            blocksCount.put(b2.value().asItem(), blocksCount.get(b2.value().asItem()) + 1);
-                        }
+                        slot.addItemStack(new ItemStack(b2.value().asItem()));
+                        x.getAndIncrement();
                     });
+                    sideSlots.add(slot);
                 }
             });
+            /*
+            sideSlots.forEach(s -> s.addTooltipCallback(new IRecipeSlotTooltipCallback() {
+                @Override
+                public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
+                    if (recipeSlotView.getDisplayedIngredient().get().getItemStack().isPresent())
+                        tooltip.add(Component.translatable("gui.omgen.text.side").append(": " + blocksCount.getOrDefault(recipeSlotView
+                                .getDisplayedIngredient()
+                                .get().getItemStack().get().getItem(), 0)));
+                }
+            }));*/
         }
-        interactionSlot.addTooltipCallback(new IRecipeSlotTooltipCallback() {
-            @Override
-            public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
-                if (recipeSlotView.getDisplayedIngredient().get().getItemStack().isPresent())
-                    tooltip.add(Component.translatable("gui.omgen.text.side").append(": " + blocksCount.getOrDefault(recipeSlotView
-                        .getDisplayedIngredient()
-                        .get().getItemStack().get().getItem(), 0)));
-            }
-        });
+
         IRecipeSlotBuilder resultSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, resultX, f(resultY)).setSlotName("result");
         AtomicReference<Double> latest = new AtomicReference<>((double) 0);
         recipe.pool.forEach((d, bs) -> {
@@ -260,8 +261,23 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
     }
     @Override
     public void draw(GenerationEntry recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
-        Minecraft.getInstance().font.draw(stack, Component.translatable("gui.omgen.text.min_height").append(String.valueOf(recipe.condition.getContext().minHeight)), 9, 55, DyeColor.WHITE.getTextColor());
-        Minecraft.getInstance().font.draw(stack, Component.translatable("gui.omgen.text.max_height").append(String.valueOf(recipe.condition.getContext().maxHeight)), 9, 58, DyeColor.WHITE.getTextColor());
+        MutableComponent acceptableHeightText = new TranslatableComponent("gui.omgen.text.acceptable_height");
+
+        Integer maxHeight = recipe.condition.getContext().maxHeight;
+        Integer minHeight = recipe.condition.getContext().minHeight;
+
+        if (maxHeight == null && minHeight == null) {
+            acceptableHeightText.append(new TranslatableComponent("gui.omgen.text.any"));
+        } else {
+            if (minHeight != null) {
+                acceptableHeightText.append(minHeight + " ≤ ");
+            }
+            acceptableHeightText.append("Y");
+            if (maxHeight != null) {
+                acceptableHeightText.append(" ≤ " + maxHeight);
+            }
+        }
+        Minecraft.getInstance().font.draw(stack, acceptableHeightText , 2, 79, DyeColor.WHITE.getTextColor());
     }
 
 }
