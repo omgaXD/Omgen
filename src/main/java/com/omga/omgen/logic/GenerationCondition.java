@@ -57,8 +57,8 @@ public class GenerationCondition {
         condition = (l, bp) -> true;
 
         // it would make sense to check height here first.
-        condition = condition.and((l, bp) -> bp.getY() >= context.minHeight);
-        condition = condition.and((l, bp) -> bp.getY() <= context.maxHeight);
+        condition = condition.and((l, bp) -> context.minHeight == null || bp.getY() >= context.minHeight);
+        condition = condition.and((l, bp) -> context.maxHeight == null || bp.getY() <= context.maxHeight);
 
         // add the other fluid to the predicate.
         if (context.theOtherFluid != null) {
@@ -158,8 +158,8 @@ public class GenerationCondition {
         public PositionOfTheOtherFluid pos;
 
         // Min and max height of the generation that can occur (both inclusive)
-        public int minHeight = Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getMinBuildHeight() : 0;
-        public int maxHeight = Minecraft.getInstance().level.getMaxBuildHeight();
+        public Integer minHeight = null;
+        public Integer maxHeight = null;
 
         public Context(@Nullable ItemOrTagKey<Block> blockBelow, @Nullable ItemOrTagKey<Block> blockAbove, @Nullable ItemOrTagKey<Block>[] neighbourBlocksAround, @Nonnull ItemOrTagKey<Fluid> initiatingFluid, @Nullable ItemOrTagKey<Fluid> theOtherFluid, @Nullable PositionOfTheOtherFluid pos, Integer minHeight, Integer maxHeight) {
             this.blockBelow = blockBelow;
@@ -168,13 +168,8 @@ public class GenerationCondition {
             this.initiatingFluid = initiatingFluid;
             this.theOtherFluid = theOtherFluid;
             this.pos = pos;
-            if (minHeight != null) {
-                this.minHeight = minHeight;
-            }
-            if (maxHeight != null) {
-                this.maxHeight = maxHeight;
-            }
-
+            this.minHeight = minHeight;
+            this.maxHeight = maxHeight;
         }
 
         public enum PositionOfTheOtherFluid {

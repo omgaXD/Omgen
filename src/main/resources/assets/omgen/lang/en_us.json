@@ -4,6 +4,6 @@
   "gui.omgen.text.below": "Below",
   "gui.omgen.text.side": "Side, needed count",
   "gui.omgen.text.weight": "Weight",
-  "gui.omgen.text.min_height": "Minimal height: ",
-  "gui.omgen.text.max_height": "Maximal height: "
+  "gui.omgen.text.acceptable_height": "Height: ",
+  "gui.omgen.text.any": "Any"
 }
