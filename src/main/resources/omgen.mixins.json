@@ -5,8 +5,6 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "omgen.refmap.json",
   "mixins": [
-  ],
-  "client": [
     "LiquidBlockMixin"
   ],
   "injectors": {

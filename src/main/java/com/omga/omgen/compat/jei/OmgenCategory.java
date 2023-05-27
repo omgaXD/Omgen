@@ -34,8 +34,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("removal")
 public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
-    public static final int width = 116;
+    public static final int width = 161;
     public static final int height = 91;
+    private static final int offsetX = 21;
     private final IDrawable background;
     private final IDrawable icon;
 
@@ -90,41 +91,13 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
     public void setRecipe(IRecipeLayoutBuilder builder, GenerationEntry recipe, IFocusGroup focuses) {
         GenerationCondition.Context context = recipe.condition.getContext();
 
-        /*
-        var temp = builder.addInvisibleIngredients(RecipeIngredientRole.INPUT);
-        if (context.initiatingFluid.holdsItem()) {
-            temp.addFluidStack(context.initiatingFluid.item, 1000);
-        } else if (context.initiatingFluid.holdsTagKey()) {
-            Registry.FLUID.getTag(context.initiatingFluid.tagKey).get().forEach(f -> {
-                temp.addFluidStack(f.value(), 1000);
-            });
-        }
 
-        if (context.theOtherFluid != null) {
-            if (context.theOtherFluid.holdsItem()) {
-                temp.addFluidStack(context.theOtherFluid.item, 1000);
-            } else if (context.theOtherFluid.holdsTagKey()) {
-                Registry.FLUID.getTag(context.theOtherFluid.tagKey).get().forEach(f -> {
-                    temp.addFluidStack(f.value(), 1000);
-                });
-            }
-        }
-
-        if (context.blockBelow != null) {
-            if (context.blockBelow.holdsItem()) {
-                temp.addItemStack(new ItemStack(context.blockBelow.item.asItem()));
-            } else if (context.blockBelow.holdsTagKey()) {
-                Registry.BLOCK.getTag(context.blockBelow.tagKey).get().forEach(b -> {
-                    temp.addItemStack(new ItemStack(b.value().asItem()));
-                });
-            }
-        }*/
 
         // prepare positions
         int     fluid1X = 0, fluid1Y = 1,
                 fluid2X = fluid1X + 2, fluid2Y = fluid1Y,
                 interactionX = fluid1X + 1, interactionY = fluid1Y,
-                resultX = 95, resultY = 1,
+                resultX = 95 + offsetX, resultY = 1,
                 sideY = 55;
         ;
         boolean primaryAbove = false;
@@ -141,7 +114,7 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
                 primaryAbove = true;
                 break;
         }
-        IRecipeSlotBuilder primarySlot = builder.addSlot(RecipeIngredientRole.CATALYST, f(fluid1X), f(fluid1Y));
+        IRecipeSlotBuilder primarySlot = builder.addSlot(RecipeIngredientRole.CATALYST, f(fluid1X)+offsetX, f(fluid1Y));
         if (context.initiatingFluid.holdsItem()) {
             primarySlot.addFluidStack(context.initiatingFluid.item, 1000);
         } else if (context.initiatingFluid.holdsTagKey()) {
@@ -149,7 +122,7 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
                 primarySlot.addFluidStack(f.value(), 1000);
             });
         }
-        IRecipeSlotBuilder secondarySlot = builder.addSlot(RecipeIngredientRole.CATALYST, f(fluid2X), f(fluid2Y));
+        IRecipeSlotBuilder secondarySlot = builder.addSlot(RecipeIngredientRole.CATALYST, f(fluid2X)+offsetX, f(fluid2Y));
         if (context.theOtherFluid != null) {
             if (context.theOtherFluid.holdsItem()) {
                 secondarySlot.addFluidStack(context.theOtherFluid.item, 1000);
@@ -159,7 +132,7 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
                 });
             }
         }
-        IRecipeSlotBuilder belowSlot = builder.addSlot(RecipeIngredientRole.CATALYST, f(interactionX), f(interactionY + 1));
+        IRecipeSlotBuilder belowSlot = builder.addSlot(RecipeIngredientRole.CATALYST, f(interactionX)+offsetX, f(interactionY + 1));
         if (context.blockBelow != null) {
             if (context.blockBelow.holdsItem()) {
                 belowSlot.addItemStack(new ItemStack(context.blockBelow.item.asItem()));
@@ -179,7 +152,7 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
         if (primaryAbove) {
             aboveSlot = primarySlot;
         } else {
-            aboveSlot = builder.addSlot(RecipeIngredientRole.CATALYST, f(interactionX), f(interactionY - 1));
+            aboveSlot = builder.addSlot(RecipeIngredientRole.CATALYST, f(interactionX)+offsetX, f(interactionY - 1));
         }
         if (context.blockAbove != null) {
             if (context.blockAbove.holdsItem()) {
@@ -196,17 +169,17 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
                 tooltip.add(new TranslatableComponent("gui.omgen.text.above"));
             }
         });
-        IRecipeSlotBuilder interactionSlot = builder.addSlot(RecipeIngredientRole.CATALYST, f(interactionX), f(interactionY));
+        IRecipeSlotBuilder interactionSlot = builder.addSlot(RecipeIngredientRole.CATALYST, f(interactionX)+offsetX, f(interactionY));
         if (context.neighbourBlocksAround != null) {
             // add a new slot for side blocks per each next unique value
             ArrayList<IRecipeSlotBuilder> sideSlots = new ArrayList<>();
             AtomicInteger x = new AtomicInteger();
             Arrays.stream(context.neighbourBlocksAround).iterator().forEachRemaining(b -> {
                 if (b.holdsItem()) {
-                    sideSlots.add(builder.addSlot(RecipeIngredientRole.CATALYST, 44 + f(x.get()), sideY).addItemStack(new ItemStack(b.item.asItem())));
+                    sideSlots.add(builder.addSlot(RecipeIngredientRole.CATALYST, 44 + f(x.get())+offsetX, sideY).addItemStack(new ItemStack(b.item.asItem())));
                     x.getAndIncrement();
                 } else if (b.holdsTagKey()) {
-                    var slot = builder.addSlot(RecipeIngredientRole.CATALYST, 44 + f(x.get()), sideY);
+                    var slot = builder.addSlot(RecipeIngredientRole.CATALYST, 44 + f(x.get())+offsetX, sideY);
                     Registry.BLOCK.getTag(b.tagKey).get().forEach(b2 -> {
                         slot.addItemStack(new ItemStack(b2.value().asItem()));
                         x.getAndIncrement();
@@ -272,18 +245,27 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
         Integer maxHeight = recipe.condition.getContext().maxHeight;
         Integer minHeight = recipe.condition.getContext().minHeight;
 
-        if (maxHeight == null && minHeight == null) {
-            acceptableHeightText.append(new TranslatableComponent("gui.omgen.text.any"));
-        } else {
-            if (minHeight != null) {
-                acceptableHeightText.append(minHeight + " ≤ ");
-            }
-            acceptableHeightText.append("Y");
-            if (maxHeight != null) {
-                acceptableHeightText.append(" ≤ " + maxHeight);
-            }
-        }
+        acceptableHeightText = acceptableHeightText.append(getComponentForHeightLimitations(maxHeight, minHeight));
+
         Minecraft.getInstance().font.draw(stack, acceptableHeightText , 2, 79, DyeColor.WHITE.getTextColor());
+    }
+
+    private MutableComponent getComponentForHeightLimitations(Integer maxHeight, Integer minHeight) {
+        // None are present
+        if (maxHeight == null && minHeight == null) {
+            return new TranslatableComponent("gui.omgen.text.any");
+        }
+        // Both are present
+        if (maxHeight != null && minHeight != null) {
+            return new TranslatableComponent("gui.omgen.text.between", minHeight, maxHeight);
+        }
+        // Only max height is present
+        if (maxHeight != null) {
+            return new TranslatableComponent("gui.omgen.text.below_h", maxHeight);
+        }
+        // Only min height is present
+        return new TranslatableComponent("gui.omgen.text.above_h", minHeight);
+
     }
 
 }

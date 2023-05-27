@@ -5,5 +5,8 @@
   "gui.omgen.text.side": "Side, needed count",
   "gui.omgen.text.weight": "Weight",
   "gui.omgen.text.acceptable_height": "Height: ",
-  "gui.omgen.text.any": "Any"
+  "gui.omgen.text.any": "Any",
+  "gui.omgen.text.between": "Between %s and %s",
+  "gui.omgen.text.below_h": "Below %s",
+  "gui.omgen.text.above_h": "Above %s"
 }
