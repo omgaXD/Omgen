@@ -24,9 +24,11 @@ public class OmgenJEIPlugin implements IModPlugin {
         registration.addRecipes(omgencategory.getRecipeType(), OmgenReloadListener.entries.values().asList());
     }
 
+
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
         omgencategory =  new OmgenCategory(registration.getJeiHelpers().getGuiHelper());
         registration.addRecipeCategories(omgencategory);
     }
+
 }

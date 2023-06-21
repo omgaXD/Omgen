@@ -22,7 +22,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '0.4.2'
+version = '0.5.0'
 group = 'com.omga.omgen' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'omgen'
 
@@ -170,7 +170,6 @@ dependencies {
     compileOnly fg.deobf('mezz.jei:jei-1.18.2-forge-api:10.2.1.283')
 
     runtimeOnly fg.deobf('curse.maven:jei-238222:4434393')
-
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     // For more info...
