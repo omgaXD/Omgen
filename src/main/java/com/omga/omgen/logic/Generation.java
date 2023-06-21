@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber
+
 public class Generation {
     public static final Direction[] xzAxisDirections = new Direction[]{Direction.EAST, Direction.SOUTH, Direction.NORTH, Direction.WEST};
     public static List<FluidState> getFluidStatesAroundAndAbove(LevelAccessor level, BlockPos origin) {
@@ -82,7 +82,9 @@ public class Generation {
                 GEs.clear();
                 biggestPriority = ge.getPriority();
             }
-            GEs.add(ge);
+            if (ge.getPriority() == biggestPriority) {
+                GEs.add(ge);
+            }
         }
         return biggestPriority;
     }
