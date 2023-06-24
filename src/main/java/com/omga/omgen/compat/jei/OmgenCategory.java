@@ -19,6 +19,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -261,13 +262,13 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
     }
     @Override
     public void draw(GenerationEntry recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
-        MutableComponent acceptableHeightText = new TranslatableComponent("gui.omgen.text.acceptable_height");
+        MutableComponent acceptableHeightText = Component.translatable("gui.omgen.text.acceptable_height");
 
         Integer maxHeight = recipe.condition.getContext().maxHeight;
         Integer minHeight = recipe.condition.getContext().minHeight;
 
         if (maxHeight == null && minHeight == null) {
-            acceptableHeightText.append(new TranslatableComponent("gui.omgen.text.any"));
+            acceptableHeightText.append(Component.translatable("gui.omgen.text.any"));
         } else {
             if (minHeight != null) {
                 acceptableHeightText.append(minHeight + " ≤ ");
