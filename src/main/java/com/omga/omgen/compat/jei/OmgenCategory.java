@@ -248,18 +248,18 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
     private MutableComponent getComponentForHeightLimitations(Integer maxHeight, Integer minHeight) {
         // None are present
         if (maxHeight == null && minHeight == null) {
-            return new TranslatableComponent("gui.omgen.text.any");
+            return Component.translatable("gui.omgen.text.any");
         }
         // Both are present
         if (maxHeight != null && minHeight != null) {
-            return new TranslatableComponent("gui.omgen.text.between", minHeight, maxHeight);
+            return Component.translatable("gui.omgen.text.between", minHeight, maxHeight);
         }
         // Only max height is present
         if (maxHeight != null) {
-            return new TranslatableComponent("gui.omgen.text.below_h", maxHeight);
+            return Component.translatable("gui.omgen.text.below_h", maxHeight);
         }
         // Only min height is present
-        return new TranslatableComponent("gui.omgen.text.above_h", minHeight);
+        return Component.translatable("gui.omgen.text.above_h", minHeight);
 
     }
 
