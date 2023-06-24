@@ -260,8 +260,8 @@ public class OmgenCategory implements IRecipeCategory<GenerationEntry> {
     }
     @Override
     public void draw(GenerationEntry recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
-        Minecraft.getInstance().font.draw(stack, new TranslatableComponent("gui.omgen.text.min_height").append(String.valueOf(recipe.condition.getContext().minHeight)), 9, 55, DyeColor.WHITE.getTextColor());
-        Minecraft.getInstance().font.draw(stack, new TranslatableComponent("gui.omgen.text.max_height").append(String.valueOf(recipe.condition.getContext().maxHeight)), 9, 58, DyeColor.WHITE.getTextColor());
+        Minecraft.getInstance().font.draw(stack, Component.translatable("gui.omgen.text.min_height").append(String.valueOf(recipe.condition.getContext().minHeight)), 9, 55, DyeColor.WHITE.getTextColor());
+        Minecraft.getInstance().font.draw(stack, Component.translatable("gui.omgen.text.max_height").append(String.valueOf(recipe.condition.getContext().maxHeight)), 9, 58, DyeColor.WHITE.getTextColor());
     }
 
 }
