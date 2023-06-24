@@ -1,6 +1,8 @@
 package com.omga.omgen.logic;
 
 import com.omga.omgen.util.WeightedRandomCollection;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class GenerationEntry {

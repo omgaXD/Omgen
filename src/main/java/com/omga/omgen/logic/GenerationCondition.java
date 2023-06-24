@@ -310,22 +310,33 @@ public class GenerationCondition {
 
             // first add context-related
             var context = src.condition.getContext();
-            object.addProperty("below", context.blockBelow.toString());
-            object.addProperty("above", context.blockAbove.toString());
+            if (context.blockBelow != null)
+                object.addProperty("below", context.blockBelow.toString());
+            if (context.blockAbove != null)
+                object.addProperty("above", context.blockAbove.toString());
 
             JsonArray around = new JsonArray();
-            for (ItemOrTagKey<Block> block :
-                    context.neighbourBlocksAround) {
-                around.add(block.toString());
-            }
+            if (context.neighbourBlocksAround != null)
+                for (ItemOrTagKey<Block> block :
+                        context.neighbourBlocksAround) {
+                    around.add(block.toString());
+                }
+
             object.add("around", around);
 
             object.addProperty("primary", context.initiatingFluid.toString());
-            object.addProperty("secondary", context.theOtherFluid.toString());
-            object.addProperty("secondary_pos", context.pos.name());
 
-            object.addProperty("min_height", context.minHeight);
-            object.addProperty("max_height", context.maxHeight);
+            if (context.theOtherFluid != null)
+                object.addProperty("secondary", context.theOtherFluid.toString());
+            if (context.pos != null)
+                object.addProperty("secondary_pos", context.pos.name());
+
+            object.addProperty("priority", src.getPriority());
+
+            if (context.minHeight != null)
+                object.addProperty("min_height", context.minHeight);
+            if (context.maxHeight != null)
+                object.addProperty("max_height", context.maxHeight);
 
             // now random collection
             object.add("gens", new WeightedRandomCollection.Serializer().serialize(src.pool, typeOfSrc, c));
