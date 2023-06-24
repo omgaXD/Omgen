@@ -310,23 +310,23 @@ public class GenerationCondition {
             // first add context-related
             var context = src.condition.getContext();
             if (context.blockBelow != null)
-                object.addProperty("below", context.blockBelow.toString());
+                object.addProperty("below", context.blockBelow.toString(ForgeRegistries.BLOCKS));
             if (context.blockAbove != null)
-                object.addProperty("above", context.blockAbove.toString());
+                object.addProperty("above", context.blockAbove.toString(ForgeRegistries.BLOCKS));
 
             JsonArray around = new JsonArray();
             if (context.neighbourBlocksAround != null)
                 for (ItemOrTagKey<Block> block :
                         context.neighbourBlocksAround) {
-                    around.add(block.toString());
+                    around.add(block.toString(ForgeRegistries.BLOCKS));
                 }
 
             object.add("around", around);
 
-            object.addProperty("primary", context.initiatingFluid.toString());
+            object.addProperty("primary", context.initiatingFluid.toString(ForgeRegistries.FLUIDS));
 
             if (context.theOtherFluid != null)
-                object.addProperty("secondary", context.theOtherFluid.toString());
+                object.addProperty("secondary", context.theOtherFluid.toString(ForgeRegistries.FLUIDS));
             if (context.pos != null)
                 object.addProperty("secondary_pos", context.pos.name());
 
