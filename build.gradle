@@ -22,7 +22,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-mcversion = '1.19.2'
+var mcversion = '1.19.2'
 version = '0.6.1'
 group = 'com.omga.omgen' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "omgen-${mcversion}"
