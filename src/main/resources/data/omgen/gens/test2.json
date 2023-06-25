@@ -1,0 +1,12 @@
+{
+  "primary": "#minecraft:lava",
+  "secondary": "#minecraft:water",
+  "max_height": -16,
+  "secondary_pos": "Neighbour",
+  "gens": [
+    [10, "minecraft:emerald_block"],
+    [1, "minecraft:diamond_block"]
+  ],
+  "min_height": -48,
+  "priority": 150
+}

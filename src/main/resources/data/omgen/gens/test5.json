@@ -1,0 +1,8 @@
+{
+  "primary": "minecraft:water",
+  "below": "emerald_block",
+  "priority": 10000,
+  "gens": [
+    [10, "acacia_leaves"]
+  ]
+}

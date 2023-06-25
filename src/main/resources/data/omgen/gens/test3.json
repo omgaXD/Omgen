@@ -1,0 +1,11 @@
+{
+  "primary": "#minecraft:lava",
+  "secondary": "#minecraft:water",
+  "max_height": 0,
+  "secondary_pos": "Neighbour",
+  "gens": [
+    [10, "minecraft:deepslate"],
+    [1, "minecraft:diamond_block"]
+  ],
+  "priority": 120
+}
