@@ -22,7 +22,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '0.6.0'
+version = '0.6.1'
 group = 'com.omga.omgen' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'omgen'
 
@@ -193,7 +193,7 @@ jar {
     sourceSets {
         main {
             resources {
-                //exclude '**/data/**'
+                exclude '**/data/**'
             }
         }
     }
