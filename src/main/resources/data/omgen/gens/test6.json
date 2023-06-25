@@ -1,0 +1,8 @@
+{
+  "primary": "#minecraft:water",
+  "above": "minecraft:obsidian",
+  "gens": [
+    [10, "minecraft:dirt"]
+  ],
+  "priority": 100
+}

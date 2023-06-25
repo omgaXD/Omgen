@@ -1,0 +1,8 @@
+{
+  "primary": "#minecraft:water",
+  "below": "minecraft:obsidian",
+  "gens": [
+    [10, "minecraft:diamond_block"]
+  ],
+  "priority": 100
+}

@@ -1,0 +1,10 @@
+{
+  "primary": "#minecraft:water",
+  "above": "minecraft:diamond_block",
+  "below": "minecraft:emerald_block",
+  "priority": 150,
+  "gens": [
+    [10, "obsidian"]
+  ],
+  "max_height": 64
+}
